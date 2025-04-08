@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "animate": "^1.0.0",
+    "animate.css": "^4.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.1",
+    "react-bootstrap": "^2.10.9",
+    "react-on-screen": "^2.1.1"
+  }
+}
