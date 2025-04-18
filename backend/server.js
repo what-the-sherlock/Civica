@@ -60,5 +60,5 @@ app.post("/legal-expert", async (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`✅ Legal Expert API running on http://localhost:${PORT}`);
+  console.log(`✅ Legal Expert API running on ${import.meta.env.URL}`);
 });
