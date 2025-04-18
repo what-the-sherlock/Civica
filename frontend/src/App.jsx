@@ -4,7 +4,7 @@ import ImgSlider from './components/ImgSlider'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import { NavBar } from './components/NavBar'
 import Home from './pages/Home'
-import Learn from './pages/Learn'
+// import Learn from './pages/Learn'
 import { Footer } from './components/Footer'
 import AskQuestion from './pages/AskQuestion'
 import FamilyAndPersonalLaws from './pages/FamilyAndPersonalLaws'
@@ -20,7 +20,7 @@ function App() {
       <NavBar/>
       <Routes>
         <Route path='/' element={<Home/>}/>
-        <Route path='/learn' element={<Learn/>}/>
+        {/* <Route path='/learn' element={<Learn/>}/> */}
         <Route path='/ask' element={<AskQuestion/>}/>
         <Route path="/family-and-personal-laws" element={<FamilyAndPersonalLaws />} />
         <Route path="/constitutional-rights" element={<ConstitutionalRights/>} />

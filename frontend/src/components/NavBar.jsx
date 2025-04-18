@@ -114,7 +114,7 @@ export function NavBar() {
     <ul className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-8">
       {[
         { name: "Home", path: "/" },
-        { name: "Learn Laws", path: "/learn" },
+        // { name: "Learn Laws", path: "/learn" },
         { name: "Ask a Question", path: "/ask" },
       ].map((item) => (
         <Typography
@@ -135,12 +135,10 @@ export function NavBar() {
     >
       <div className="flex items-center justify-between">
         {/* Logo Section */}
-        <div className="flex items-center space-x-4">
+        <Link to="/" className="flex items-center space-x-4 cursor-pointer">
           <img src="src/assets/img/civica-logo.png" className="h-12 w-auto" alt="Civica Logo" />
-          <Typography as="a" href="#" className="text-white text-2xl font-semibold">
-            Civica
-          </Typography>
-        </div>
+          <span className="text-white text-2xl font-semibold">Civica</span>
+        </Link>
 
         {/* Desktop Menu */}
         <div className="hidden lg:flex items-center space-x-8">

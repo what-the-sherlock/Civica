@@ -1,165 +1,217 @@
-
-
-import React from "react";
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import Consumer from "../components/Consumer";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import {
+  FaBalanceScale,
+  FaFeatherAlt,
+  FaRegSmileBeam,
+} from "react-icons/fa";
 
-const timelineVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.3, duration: 0.6, ease: "easeOut" },
-  }),
+import img1 from "../assets/img/cr1.png";
+import img2 from "../assets/img/cr2.png";
+import img3 from "../assets/img/cr3.png";
+import img4 from "../assets/img/cr4.png";
+import img5 from "../assets/img/cr5.png";
+import img6 from "../assets/img/cr6.png";
+
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+const story = [
+  {
+    title: "Rahul’s Online Purchase",
+    content: "Rahul ordered a smartphone from an e-commerce website, but when it arrived, he found it was defective.",
+    image: img1,
+    icon: <FaBalanceScale />,
+  },
+  {
+    title: "Right to Safety",
+    content: "He realized the phone was overheating, which could be a safety hazard. He decided to take action.",
+    image: img2,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "Right to Information",
+    content: "Rahul checked the product details and warranty terms on the website but found misleading information.",
+    image:img3,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "Right to Choose",
+    content: "He contacted customer service, requesting a replacement or refund, as he had the right to choose a proper product.",
+    image: img4,
+    icon: <FaBalanceScale />,
+  },
+  {
+    title: "Right to be Heard",
+    content: "The company initially ignored his complaint, but he persisted by emailing them and posting on social media.",
+    image: img5,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "Right to Redressal",
+    content: "After continued follow-ups, the company offered him a replacement, but he demanded a full refund.",
+    image: img4,
+    icon: <FaRegSmileBeam />,
+  },
+  {
+    title: "Consumer Court",
+    content: "Frustrated, Rahul filed a complaint with the consumer forum, providing all necessary proof.",
+    image: img6,
+    icon: <FaRegSmileBeam />,
+  },
+  {
+    title: "Justice Served",
+    content: "The consumer forum ruled in his favor, ordering the company to refund his money and compensate for the inconvenience.",
+    image: img6,
+    icon: <FaRegSmileBeam />,
+  },
+  // {
+  //   title: "",
+  //   content: "",
+  //   image: img6,
+  //   icon: <FaRegSmileBeam />,
+  // },
+];
+
+const animateSections = () => {
+  const sections = gsap.utils.toArray(".section");
+  const storySections = sections.slice(2); // Skip intro
+
+  // Show intro sections
+  gsap.set(sections.slice(0, 2), { opacity: 1, scale: 1 });
+
+  // Hide story sections initially
+  gsap.set(storySections, { opacity: 0, scale: 0.95 });
+
+  storySections.forEach((section) => {
+    const title = section.querySelector(".section-title");
+    const content = section.querySelector(".section-content");
+
+    // Fade in section
+    gsap.to(section, {
+      opacity: 1,
+      scale: 1,
+      duration: 1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: section,
+        start: "top center",
+        end: "bottom center",
+        toggleActions: "play reverse play reverse",
+        markers: false, // set to true for debugging
+      },
+    });
+
+    // Animate title
+    if (title) {
+      gsap.from(title, {
+        y: -40,
+        opacity: 100,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: section,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }
+
+    // Animate content
+    if (content) {
+      gsap.from(content, {
+        y: 30,
+        opacity: 10,
+        duration: 1,
+        delay: 0.1,
+        scrollTrigger: {
+          trigger: section,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }
+  });
+
+  return sections;
 };
 
-const ConsumerRights = () => {
+
+const StorySection = ({ title, content, image, icon }) => (
+  <div
+    className="section relative h-screen w-full bg-center bg-cover flex items-end justify-center px-4 pb-16"
+    style={{ backgroundImage: image ? `url(${image})` : "none" }}
+  >
+    {/* Dark overlay */}
+    <div className="absolute inset-0 bg-black/5 z-10" />
+
+    {/* Content Box at Bottom Center */}
+    <div className="relative z-20 bg-[#EFDCAB] px-6 py-6 rounded-2xl shadow-xl max-w-xl w-full text-center border-2 border-[#D98324]/50 flex flex-col items-center space-y-2">
+      <div className="text-[#D98324] text-3xl">{icon}</div>
+      <h2 className="text-2xl font-bold text-[#7a4e21]">{title}</h2>
+      <p className="text-base font-medium text-[#5a4636] leading-relaxed">
+        {content}
+      </p>
+    </div>
+  </div>
+);
+
+
+export default function ConsumerRights() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const sections = animateSections();
+
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: "top top",
+      end: "bottom bottom",
+      snap: 1 / (sections.length - 1),
+      scrub: 1,
+    });
+
+    return () => ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  }, []);
+
   return (
-    <div className="bg-[#EFDCAB] text-[#443627] py-12 px-6 pt-30">
-      <div className="container mx-auto flex flex-col md:flex-row items-center md:items-start">
-        {/* Left Section */}
-        <div className="flex flex-col w-full md:w-1/3 mb-12 md:mb-0 px-4">
-          <p className="text-[#D98324] uppercase tracking-widest text-sm font-semibold">
+    <div>
+
+      <div ref={containerRef} className="w-full overflow-hidden font-serif">
+        {/* Intro Section */}
+        <div className="section h-screen flex flex-col justify-center items-center bg-[#EFDCAB] text-[#443627] text-center px-6 py-10">
+          <h1 className="section-title text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight text-[#D98324] mb-8">
+          Consumer Rights
+          </h1>
+          
+          <p className="text-xl md:text-2xl lg:text-3xl font-semibold mb-4 max-w-3xl">
           Empowered Consumers, Fairer Markets!
           </p>
-          <h1 className="text-4xl font-bold leading-snug mt-2">
-            Consumer Rights
-          </h1>
-          <p className="text-lg text-[#443627] opacity-80 mt-4">
+          
+          <p className="text-base md:text-lg lg:text-xl font-medium max-w-4xl text-[#5a4636] leading-relaxed">
           Consumer rights are the legal protections granted to buyers to ensure fair trade, safety, and accurate information about products and services. These rights include the Right to Safety, Right to Information, Right to Choice, Right to Be Heard, Right to Redressal, and Right to Consumer Education. They empower consumers to make informed decisions, seek justice against unfair practices, and ensure quality in goods and services.
           </p>
         </div>
 
-        {/* Right Timeline Section */}
-        <div className="w-full md:w-2/3 px-4">
-          <div className="relative wrap overflow-hidden p-6">
-            {/* Timeline Vertical Line */}
-            <div className="absolute border-2 border-[#D98324] h-full left-1/2 transform -translate-x-1/2"></div>
-
-            {/* Timeline Items with Animation */}
-            {[
-              {
-                title: "Rahul’s Online Purchase",
-                description: [
-                  "Rahul ordered a smartphone from an e-commerce website, but when it arrived, he found it was defective.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Right to Safety",
-                description: [
-                  "He realized the phone was overheating, which could be a safety hazard. He decided to take action.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Right to Information",
-                description: [
-                  "Rahul checked the product details and warranty terms on the website but found misleading information.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Right to Choose",
-                description: [
-                  "He contacted customer service, requesting a replacement or refund, as he had the right to choose a proper product.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Right to be Heard",
-                description: [
-                  "The company initially ignored his complaint, but he persisted by emailing them and posting on social media.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Right to Redressal",
-                description: [
-                  "After continued follow-ups, the company offered him a replacement, but he demanded a full refund.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Consumer Court",
-                description: [
-                  "Frustrated, Rahul filed a complaint with the consumer forum, providing all necessary proof.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Justice Served",
-                description: [
-                  "The consumer forum ruled in his favor, ordering the company to refund his money and compensate for the inconvenience.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Lesson Learned",
-                description: [
-                  "Rahul realized the power of consumer rights and started educating others about their rights in the market.",
-
-                ],
-                alignment: "right",
-              },
-
-            ].map((event, index) => (
-              <motion.div
-                key={index}
-                custom={index}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={timelineVariants}
-                className={`mb-8 flex flex-col md:flex-row items-center ${
-                  event.alignment === "right" ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                {/* Dot and Connector */}
-                <div className="w-4 h-4 bg-[#D98324] rounded-full absolute left-1/2 transform -translate-x-1/2"></div>
-                
-                {/* Event Content */}
-                <div className="md:w-5/12 w-full px-4">
-                  <h4 className="font-bold text-xl text-[#D98324]">
-                    {event.title}
-                  </h4>
-                  {event.description.map((line, i) => (
-                    <p key={i} className="text-[#443627] opacity-90 text-md mt-2">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          {/* Timeline Image */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="flex justify-center"
-          >
-            <img
-              className="w-40 max-w-md md:max-w-lg mt-8"
-              src="src\assets\img\consumer.png"
-              alt="timeline"
-            />
-          </motion.div>
-        </div>
+      <div className="section h-screen flex flex-col justify-center items-center bg-[#EFDCAB] text-[#5a4636] text-center px-6">
+        <h2 className="section-title text-4xl md:text-5xl font-bold mb-4">
+          To understand consumer rights...
+        </h2>
+        <p className="section-content text-xl md:text-2xl max-w-2xl">
+          ...here is a short story about Rahul's online purchase.
+        </p>
       </div>
-      <Consumer/>
+
+      {/* Story Sections */}
+      {story.map((item, index) => (
+        <StorySection key={index} {...item} />
+      ))}
+    </div>
+    <Consumer/>
     </div>
   );
-};
+}
 
-export default ConsumerRights;
+

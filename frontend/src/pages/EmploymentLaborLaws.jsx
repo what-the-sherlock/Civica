@@ -1,157 +1,216 @@
-
-
-import React from "react";
-import { motion } from "framer-motion";
-import Contract from "../components/Contract";
+import { useEffect, useRef } from "react";
 import EmploymentLabor from "../components/EmploymentLabor";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import {
+  FaBalanceScale,
+  FaFeatherAlt,
+  FaRegSmileBeam,
+} from "react-icons/fa";
 
-const timelineVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.3, duration: 0.6, ease: "easeOut" },
-  }),
+import img1 from "../assets/img/ell1.png";
+import img2 from "../assets/img/ell2.png";
+import img3 from "../assets/img/ell3.png";
+import img4 from "../assets/img/ell4.png";
+import img5 from "../assets/img/ell5.png";
+import img6 from "../assets/img/ell6.png";
+
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+const story = [
+  {
+    title: "Rita’s Struggles Begin at the Factory",
+    content: "Rita, a skilled tailor, joins a garment factory hoping for steady income. But soon, she finds herself working over 9 hours a day without any overtime pay. Despite her dedication, the employer treats her as replaceable, ignoring her basic rights.",
+    image: img1,
+    icon: <FaBalanceScale />,
+  },
+  {
+    title: "Denied Leave, Deducted Wages",
+    content: "One day, Rita falls sick and requests a day off. Instead of compassion, her employer denies her leave and deducts that day’s wages. She starts to question whether this is legal but feels helpless and afraid of losing her job.",
+    image: img2,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "A Ray of Hope from a Fellow Worker",
+    content: "A kind co-worker tells her that many workers face such exploitation—and that Indian labor laws protect them. Encouraged, Rita visits a nearby Labor Welfare Office to find out what her rights truly are.",
+    image:img3,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "Learning the Power of Labor Laws",
+    content: `At the office, Rita learns about key laws made to protect workers:
+
+1. The Minimum Wages Act, ensuring fair pay.
+
+2. The Factories Act, limiting work hours and mandating overtime pay.
+
+3. The Maternity Benefit Act, granting paid leave for pregnancy.
+
+4. The Employees' State Insurance Act, offering medical coverage and benefits.
+This knowledge empowers her with confidence and clarity.`,
+    image: img4,
+    icon: <FaBalanceScale />,
+  },
+  {
+    title: "Standing Up and Speaking Out",
+    content: "With support from a local labor rights NGO, Rita gathers the courage to file a formal complaint. The authorities step in, and her employer is held accountable. The factory is instructed to pay her dues and follow labor laws going forward.",
+    image: img5,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "From Silent Worker to Empowered Educator",
+    content: "Rita doesn't stop at justice for herself. Inspired by her journey, she becomes a peer educator, teaching fellow workers about their rights. She turns her pain into purpose, ensuring others don’t suffer in silence like she once did.",
+    image: img6,
+    icon: <FaRegSmileBeam />,
+  },
+
+  // {
+  //   title: "",
+  //   content: "",
+  //   image: img6,
+  //   icon: <FaRegSmileBeam />,
+  // },
+];
+
+const animateSections = () => {
+  const sections = gsap.utils.toArray(".section");
+  const storySections = sections.slice(2); // Skip intro
+
+  // Show intro sections
+  gsap.set(sections.slice(0, 2), { opacity: 1, scale: 1 });
+
+  // Hide story sections initially
+  gsap.set(storySections, { opacity: 0, scale: 0.95 });
+
+  storySections.forEach((section) => {
+    const title = section.querySelector(".section-title");
+    const content = section.querySelector(".section-content");
+
+    // Fade in section
+    gsap.to(section, {
+      opacity: 1,
+      scale: 1,
+      duration: 1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: section,
+        start: "top center",
+        end: "bottom center",
+        toggleActions: "play reverse play reverse",
+        markers: false, // set to true for debugging
+      },
+    });
+
+    // Animate title
+    if (title) {
+      gsap.from(title, {
+        y: -40,
+        opacity: 100,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: section,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }
+
+    // Animate content
+    if (content) {
+      gsap.from(content, {
+        y: 30,
+        opacity: 10,
+        duration: 1,
+        delay: 0.1,
+        scrollTrigger: {
+          trigger: section,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }
+  });
+
+  return sections;
 };
 
-const EmploymentLaborLaws = () => {
+
+const StorySection = ({ title, content, image, icon }) => (
+  <div
+    className="section relative h-screen w-full bg-center bg-cover flex items-end justify-center px-4 pb-16"
+    style={{ backgroundImage: image ? `url(${image})` : "none" }}
+  >
+    {/* Dark overlay */}
+    <div className="absolute inset-0 bg-black/5 z-10" />
+
+    {/* Content Box at Bottom Center */}
+    <div className="relative z-20 bg-[#EFDCAB] px-6 py-6 rounded-2xl shadow-xl max-w-xl w-full text-center border-2 border-[#D98324]/50 flex flex-col items-center space-y-2">
+      <div className="text-[#D98324] text-3xl">{icon}</div>
+      <h2 className="text-2xl font-bold text-[#7a4e21]">{title}</h2>
+      <p className="text-base font-medium text-[#5a4636] leading-relaxed">
+        {content}
+      </p>
+    </div>
+  </div>
+);
+
+
+export default function PropertyEstateLaws() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const sections = animateSections();
+
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: "top top",
+      end: "bottom bottom",
+      snap: 1 / (sections.length - 1),
+      scrub: 1,
+    });
+
+    return () => ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  }, []);
+
   return (
-    <div className="bg-[#EFDCAB] text-[#443627] py-12 px-6 pt-30">
-      <div className="container mx-auto flex flex-col md:flex-row items-center md:items-start">
-        {/* Left Section */}
-        <div className="flex flex-col w-full md:w-1/3 mb-12 md:mb-0 px-4">
-          <p className="text-[#D98324] uppercase tracking-widest text-sm font-semibold">
+    <div>
+
+      <div ref={containerRef} className="w-full overflow-hidden font-serif">
+        {/* Intro Section */}
+        <div className="section h-screen flex flex-col justify-center items-center bg-[#EFDCAB] text-[#443627] text-center px-6 py-10">
+          <h1 className="section-title text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight text-[#D98324] mb-8">
+          Employment and Labor Laws
+          </h1>
+          
+          <p className="text-xl md:text-2xl lg:text-3xl font-semibold mb-4 max-w-3xl">
           Fair Work, Fair Pay, Fair Rights!
           </p>
-          <h1 className="text-4xl font-bold leading-snug mt-2">
-            Employment and Labor Laws
-          </h1>
-          <p className="text-lg text-[#443627] opacity-80 mt-4">
+          
+          <p className="text-base md:text-lg lg:text-xl font-medium max-w-4xl text-[#5a4636] leading-relaxed">
           Employment and labor laws are a set of regulations that govern the rights and responsibilities of workers and employers. These laws cover aspects such as wages, working hours, job security, workplace safety, discrimination, and dispute resolution. In India, key legislations include the Factories Act, 1948, Shops and Establishments Act, Payment of Wages Act, 1936, and Industrial Disputes Act, 1947, ensuring fair treatment and protection for employees.
           </p>
         </div>
 
-        {/* Right Timeline Section */}
-        <div className="w-full md:w-2/3 px-4">
-          <div className="relative wrap overflow-hidden p-6">
-            {/* Timeline Vertical Line */}
-            <div className="absolute border-2 border-[#D98324] h-full left-1/2 transform -translate-x-1/2"></div>
-
-            {/* Timeline Items with Animation */}
-            {[
-              {
-                title: "Raj’s Hard Work",
-                description: [
-                  "Raj, a software engineer, worked late nights for months at TechPro Solutions, expecting overtime pay.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "No Overtime Compensation",
-                description: [
-                  "Despite company policies stating that employees working extra hours should be compensated, Raj never received any extra payment.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Seeking Help",
-                description: [
-                  "Frustrated, he approached HR, but they dismissed his concerns, saying he was on a fixed salary and not eligible.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Legal Consultation",
-                description: [
-                  "Raj consulted a labor lawyer, who informed him about India’s labor laws, including the Factories Act, 1948, and Shops and Establishments Act, which protect employees' rights to fair wages and overtime pay.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Filing a Complaint",
-                description: [
-                  "With the lawyer’s guidance, Raj filed a complaint with the Labour Commissioner’s office under the Payment of Wages Act, 1936.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Investigation and Action",
-                description: [
-                  "The company was investigated, and it was found that multiple employees were denied overtime pay.",
-
-                ],
-                alignment: "left",
-              },
-              {
-                title: "Justice Served",
-                description: [
-                  "The company was ordered to pay Raj and his colleagues their rightful dues, along with a penalty for violating labor laws.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Policy Change",
-                description: [
-                  "After the case, TechPro Solutions revised its employment policies to comply with labor laws and ensure fair treatment of employees.",
-
-                ],
-                alignment: "left",
-              },
-            ].map((event, index) => (
-              <motion.div
-                key={index}
-                custom={index}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={timelineVariants}
-                className={`mb-8 flex flex-col md:flex-row items-center ${
-                  event.alignment === "right" ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                {/* Dot and Connector */}
-                <div className="w-4 h-4 bg-[#D98324] rounded-full absolute left-1/2 transform -translate-x-1/2"></div>
-                
-                {/* Event Content */}
-                <div className="md:w-5/12 w-full px-4">
-                  <h4 className="font-bold text-xl text-[#D98324]">
-                    {event.title}
-                  </h4>
-                  {event.description.map((line, i) => (
-                    <p key={i} className="text-[#443627] opacity-90 text-md mt-2">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          {/* Timeline Image */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="flex justify-center"
-          >
-            <img
-              className="w-40 max-w-md md:max-w-lg mt-8"
-              src="src\assets\img\employment.png"
-              alt="timeline"
-            />
-          </motion.div>
-        </div>
+      <div className="section h-screen flex flex-col justify-center items-center bg-[#EFDCAB] text-[#5a4636] text-center px-6">
+        <h2 className="section-title text-4xl md:text-5xl font-bold mb-4">
+          To understand Employment and Labor Laws...
+        </h2>
+        <p className="section-content text-xl md:text-2xl max-w-2xl">
+          ...here is a short story about Rita's struggles in a factory.
+        </p>
       </div>
-      <EmploymentLabor/>
+
+      {/* Story Sections */}
+      {story.map((item, index) => (
+        <StorySection key={index} {...item} />
+      ))}
+    </div>
+    <EmploymentLabor/>
     </div>
   );
-};
+}
 
-export default EmploymentLaborLaws;
+
+

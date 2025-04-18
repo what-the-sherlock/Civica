@@ -1,148 +1,210 @@
-import React from "react";
-import { motion } from "framer-motion";
-import ConstitutionalLaws from "../components/ConstitutionalLaws";
 
-const timelineVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.3, duration: 0.6, ease: "easeOut" },
-  }),
+
+import { useEffect, useRef } from "react";
+import ConstitutionalLaws from "../components/ConstitutionalLaws";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import {
+  FaBalanceScale,
+  FaFeatherAlt,
+  FaRegSmileBeam,
+} from "react-icons/fa";
+
+import img1 from "../assets/img/c1.png";
+import img2 from "../assets/img/c2.png";
+import img3 from "../assets/img/c3.png";
+import img4 from "../assets/img/c4.png";
+import img5 from "../assets/img/c5.png";
+import img6 from "../assets/img/c6.png";
+
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+const story = [
+  {
+    title: "Raghav’s Struggle",
+    content: "Raghav, a young man from a small village, lived with his parents and siblings. He had always believed in the power of fairness and justice. One day, he was wrongfully accused of a crime he did not commit.",
+    image: img1,
+    icon: <FaBalanceScale />,
+  },
+  {
+    title: "The Right to Equality (Article 14)",
+    content: "Despite being from a poor background, Raghav knew that the Indian Constitution guaranteed him the right to be treated equally before the law. He was hopeful that he would be given a fair trial, like any other citizen.",
+    image: img2,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "The Right to Freedom (Articles 19-22)",
+    content: "After his arrest, Raghav was aware of his right to be informed of the charges against him (Article 22) and his right to remain silent. He didn’t speak until he had access to a lawyer, exercising his right to a defense.",
+    image:img3,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "The Right to Life and Personal Liberty (Article 21)",
+    content: "During his time in detention, Raghav feared for his safety and well-being. Article 21 of the Constitution ensured that no one could be deprived of their life or personal liberty except according to the procedure established by law. He trusted that this right would protect him.",
+    image: img4,
+    icon: <FaBalanceScale />,
+  },
+  {
+    title: "The Right to a Fair Trial (Article 14, 21)",
+    content: "Raghav hired a lawyer and prepared for his defense. He knew that under Article 21, he had the right to a fair and speedy trial. He was confident that justice would prevail as the law would provide him with a chance to defend himself.",
+    image: img5,
+    icon: <FaFeatherAlt />,
+  },
+  {
+    title: "Freedom of Speech and Expression (Article 19)",
+    content: "During the trial, Raghav’s lawyer made a powerful argument, exercising his freedom of speech to advocate for his innocence. Raghav was allowed to speak on his behalf in court, exercising his right to express himself.",
+    image: img6,
+    icon: <FaRegSmileBeam />,
+  },
+
+  {
+    title: "The Role of Judiciary in Protecting Rights",
+    content: "The judge, an advocate for justice, upheld Raghav’s constitutional rights at every step. The judiciary’s role was to ensure that the law was applied impartially and fairly, thus preserving the rights guaranteed by the Constitution.",
+    image: img2,
+    icon: <FaRegSmileBeam />,
+  },
+];
+
+const animateSections = () => {
+  const sections = gsap.utils.toArray(".section");
+  const storySections = sections.slice(2); // Skip intro
+
+  // Show intro sections
+  gsap.set(sections.slice(0, 2), { opacity: 1, scale: 1 });
+
+  // Hide story sections initially
+  gsap.set(storySections, { opacity: 0, scale: 0.95 });
+
+  storySections.forEach((section) => {
+    const title = section.querySelector(".section-title");
+    const content = section.querySelector(".section-content");
+
+    // Fade in section
+    gsap.to(section, {
+      opacity: 1,
+      scale: 1,
+      duration: 1,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: section,
+        start: "top center",
+        end: "bottom center",
+        toggleActions: "play reverse play reverse",
+        markers: false, // set to true for debugging
+      },
+    });
+
+    // Animate title
+    if (title) {
+      gsap.from(title, {
+        y: -40,
+        opacity: 100,
+        duration: 1.2,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: section,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }
+
+    // Animate content
+    if (content) {
+      gsap.from(content, {
+        y: 30,
+        opacity: 10,
+        duration: 1,
+        delay: 0.1,
+        scrollTrigger: {
+          trigger: section,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+    }
+  });
+
+  return sections;
 };
 
-const ConstitutionalRights = () => {
+
+const StorySection = ({ title, content, image, icon }) => (
+  <div
+    className="section relative h-screen w-full bg-center bg-cover flex items-end justify-center px-4 pb-16"
+    style={{ backgroundImage: image ? `url(${image})` : "none" }}
+  >
+    {/* Dark overlay */}
+    <div className="absolute inset-0 bg-black/5 z-10" />
+
+    {/* Content Box at Bottom Center */}
+    <div className="relative z-20 bg-[#EFDCAB] px-6 py-6 rounded-2xl shadow-xl max-w-xl w-full text-center border-2 border-[#D98324]/50 flex flex-col items-center space-y-2">
+      <div className="text-[#D98324] text-3xl">{icon}</div>
+      <h2 className="text-2xl font-bold text-[#7a4e21]">{title}</h2>
+      <p className="text-base font-medium text-[#5a4636] leading-relaxed">
+        {content}
+      </p>
+    </div>
+  </div>
+);
+
+
+export default function ConstitutionalRights() {
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const sections = animateSections();
+
+    ScrollTrigger.create({
+      trigger: containerRef.current,
+      start: "top top",
+      end: "bottom bottom",
+      snap: 1 / (sections.length - 1),
+      scrub: 1,
+    });
+
+    return () => ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  }, []);
+
   return (
-    <div className="bg-[#EFDCAB] text-[#443627] py-12 px-6 pt-30">
-      <div className="container mx-auto flex flex-col md:flex-row items-center md:items-start">
-        {/* Left Section */}
-        <div className="flex flex-col w-full md:w-1/3 mb-12 md:mb-0 px-4">
-          <p className="text-[#D98324] uppercase tracking-widest text-sm font-semibold">
+    <div>
+
+      <div ref={containerRef} className="w-full overflow-hidden font-serif">
+        {/* Intro Section */}
+        <div className="section h-screen flex flex-col justify-center items-center bg-[#EFDCAB] text-[#443627] text-center px-6 py-10">
+          <h1 className="section-title text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight text-[#D98324] mb-8">
+          Constitutional Rights
+          </h1>
+          
+          <p className="text-xl md:text-2xl lg:text-3xl font-semibold mb-4 max-w-3xl">
           Empowering Rights, Ensuring Justice.
           </p>
-          <h1 className="text-4xl font-bold leading-snug mt-2">
-            Constitutional Rights
-          </h1>
-          <p className="text-lg text-[#443627] opacity-80 mt-4">
+          
+          <p className="text-base md:text-lg lg:text-xl font-medium max-w-4xl text-[#5a4636] leading-relaxed">
           Constitutional Rights refer to the fundamental rights guaranteed by the Constitution of India, including rights to equality, freedom of speech, protection from discrimination, and the right to life and personal liberty. These rights are essential for safeguarding individual freedoms and ensuring justice.
           </p>
         </div>
 
-        {/* Right Timeline Section */}
-        <div className="w-full md:w-2/3 px-4">
-          <div className="relative wrap overflow-hidden p-6">
-            {/* Timeline Vertical Line */}
-            <div className="absolute border-2 border-[#D98324] h-full left-1/2 transform -translate-x-1/2"></div>
-
-            {/* Timeline Items with Animation */}
-            {[
-              {
-                title: "Raghav’s Story",
-                description: [
-                  "Raghav, a young man from a small village, lived with his parents and siblings. He had always believed in the power of fairness and justice. One day, he was wrongfully accused of a crime he did not commit.",
-
-                ],
-                alignment: "right",
-              },
-              {
-                title: "The Right to Equality (Article 14)",
-                description: [
-                  "Despite being from a poor background, Raghav knew that the Indian Constitution guaranteed him the right to be treated equally before the law. He was hopeful that he would be given a fair trial, like any other citizen.",
-                  
-                ],
-                alignment: "left",
-              },
-              {
-                title: "The Right to Freedom (Articles 19-22)",
-                description: [
-                  "After his arrest, Raghav was aware of his right to be informed of the charges against him (Article 22) and his right to remain silent. He didn’t speak until he had access to a lawyer, exercising his right to a defense.",
-                ],
-                alignment: "right",
-              },
-              {
-                title: "The Right to Life and Personal Liberty (Article 21)",
-                description: [
-                  "During his time in detention, Raghav feared for his safety and well-being. Article 21 of the Constitution ensured that no one could be deprived of their life or personal liberty except according to the procedure established by law. He trusted that this right would protect him.",
-                ],
-                alignment: "left",
-              },
-              {
-                title: "The Right to a Fair Trial (Article 14, 21)",
-                description: [
-                  "Raghav hired a lawyer and prepared for his defense. He knew that under Article 21, he had the right to a fair and speedy trial. He was confident that justice would prevail as the law would provide him with a chance to defend himself.",
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Freedom of Speech and Expression (Article 19)",
-                description: [
-                  "During the trial, Raghav’s lawyer made a powerful argument, exercising his freedom of speech to advocate for his innocence. Raghav was allowed to speak on his behalf in court, exercising his right to express himself.",
-                ],
-                alignment: "left",
-              },
-              {
-                title: "The Role of Judiciary in Protecting Rights",
-                description: [
-                  "The judge, an advocate for justice, upheld Raghav’s constitutional rights at every step. The judiciary’s role was to ensure that the law was applied impartially and fairly, thus preserving the rights guaranteed by the Constitution.",
-                ],
-                alignment: "right",
-              },
-              {
-                title: "Conclusion – The Victory of Justice",
-                description: [
-                  "After a long trial, the court ruled in Raghav’s favor. He was acquitted, and the wrongful charges against him were dismissed. Raghav left the courtroom with gratitude, knowing that the Constitution of India had protected his rights and ensured justice.",
-                ],
-                alignment: "left",
-              },              
-            ].map((event, index) => (
-              <motion.div
-                key={index}
-                custom={index}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={timelineVariants}
-                className={`mb-8 flex flex-col md:flex-row items-center ${
-                  event.alignment === "right" ? "md:flex-row-reverse" : ""
-                }`}
-              >
-                {/* Dot and Connector */}
-                <div className="w-4 h-4 bg-[#D98324] rounded-full absolute left-1/2 transform -translate-x-1/2"></div>
-                
-                {/* Event Content */}
-                <div className="md:w-5/12 w-full px-4">
-                  <h4 className="font-bold text-xl text-[#D98324]">
-                    {event.title}
-                  </h4>
-                  {event.description.map((line, i) => (
-                    <p key={i} className="text-[#443627] opacity-90 text-md mt-2">
-                      {line}
-                    </p>
-                  ))}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-          
-          {/* Timeline Image */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-            viewport={{ once: true }}
-            className="flex justify-center"
-          >
-            <img
-              className="w-40 max-w-md md:max-w-lg mt-8"
-              src="src\assets\img\constitutional_law.png"
-              alt="timeline"
-            />
-          </motion.div>
-        </div>
+      <div className="section h-screen flex flex-col justify-center items-center bg-[#EFDCAB] text-[#5a4636] text-center px-6">
+        <h2 className="section-title text-4xl md:text-5xl font-bold mb-4">
+          To understand Constitutional Rights...
+        </h2>
+        <p className="section-content text-xl md:text-2xl max-w-2xl">
+          ...here is a short story about Raghav, a young man from a small village.
+        </p>
       </div>
-      <ConstitutionalLaws/>
+
+      {/* Story Sections */}
+      {story.map((item, index) => (
+        <StorySection key={index} {...item} />
+      ))}
+    </div>
+    <ConstitutionalLaws/>
     </div>
   );
-};
+}
 
-export default ConstitutionalRights;
+
+
+
